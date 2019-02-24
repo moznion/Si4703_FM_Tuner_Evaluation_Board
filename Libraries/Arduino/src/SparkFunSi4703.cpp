@@ -63,6 +63,7 @@ void Si4703_Breakout::setVolume(int volume)
   if (volume > 15) volume = 15;
   si4703_registers[SYSCONFIG2] &= 0xFFF0; //Clear volume bits
   si4703_registers[SYSCONFIG2] |= volume; //Set new volume
+
   updateRegisters(); //Update
 }
 
@@ -141,10 +142,12 @@ void Si4703_Breakout::si4703_init()
   si4703_registers[SYSCONFIG1] |= (1<<RDS); //Enable RDS
 
   si4703_registers[SYSCONFIG1] |= (1<<DE); //50kHz Europe setup
-  si4703_registers[SYSCONFIG2] |= (1<<SPACE0); //100kHz channel spacing for Europe
+  si4703_registers[SYSCONFIG2] |= (1<<SPACE0); //100kHz channel spacing for Japan
+  si4703_registers[SYSCONFIG2] |= (1<<JP_BAND);
 
   si4703_registers[SYSCONFIG2] &= 0xFFF0; //Clear volume bits
   si4703_registers[SYSCONFIG2] |= 0x0001; //Set volume to lowest
+
   updateRegisters(); //Update
 
   delay(110); //Max powerup time, from datasheet page 13

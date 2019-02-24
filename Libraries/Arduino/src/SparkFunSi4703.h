@@ -1,4 +1,4 @@
-/* 
+/*
 Library for Sparkfun Si4703 breakout board.
 Simon Monk. 2011-09-09
 
@@ -53,9 +53,9 @@ class Si4703_Breakout
     void powerOn();					// call in setup
 	void setChannel(int channel);  	// 3 digit channel number
 	int seekUp(); 					// returns the tuned channel or 0
-	int seekDown(); 				
+	int seekDown();
 	void setVolume(int volume); 	// 0 to 15
-	void readRDS(char* message, long timeout);	
+	void readRDS(char* message, long timeout);
 									// message should be at least 9 chars
 									// result will be null terminated
 									// timeout in milliseconds
@@ -109,6 +109,8 @@ class Si4703_Breakout
 	//Register 0x05 - SYSCONFIG2
 	static const uint16_t  SPACE1 = 5;
 	static const uint16_t  SPACE0 = 4;
+	static const uint16_t  JP_WIDE_BAND = 6;
+	static const uint16_t  JP_BAND = 7;
 
 	//Register 0x0A - STATUSRSSI
 	static const uint16_t  RDSR = 15;
