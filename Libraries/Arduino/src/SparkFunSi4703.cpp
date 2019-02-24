@@ -17,12 +17,12 @@ void Si4703_Breakout::powerOn()
 
 void Si4703_Breakout::setChannel(int channel)
 {
-  //Freq(MHz) = 0.200(in USA) * Channel + 87.5MHz
-  //97.3 = 0.2 * Chan + 87.5
-  //9.8 / 0.2 = 49
-  int newChannel = channel * 10; //973 * 10 = 9730
-  newChannel -= 8750; //9730 - 8750 = 980
-  newChannel /= 10; //980 / 10 = 98
+  // Freq(MHz) = 0.100(in Japan) * Channel + 76.0MHz
+  // 80.0 = 0.1 * Chan + 76.0
+  // 4.0 / 0.1 = 40
+  int newChannel = channel * 10; // 800 * 10 = 8000
+  newChannel -= 7600;            // 8000 - 7600 = 400
+  newChannel /= 10;              // 400 / 10 = 40
 
   //These steps come from AN230 page 20 rev 0.5
   readRegisters();
@@ -67,7 +67,7 @@ void Si4703_Breakout::setVolume(int volume)
 }
 
 void Si4703_Breakout::readRDS(char* buffer, long timeout)
-{ 
+{
 	long endTime = millis() + timeout;
   boolean completed[] = {false, false, false, false};
   int completedCount = 0;
@@ -113,7 +113,7 @@ void Si4703_Breakout::readRDS(char* buffer, long timeout)
 //To get the Si4703 inito 2-wire mode, SEN needs to be high and SDIO needs to be low after a reset
 //The breakout board has SEN pulled high, but also has SDIO pulled high. Therefore, after a normal power up
 //The Si4703 will be in an unknown state. RST must be controlled
-void Si4703_Breakout::si4703_init() 
+void Si4703_Breakout::si4703_init()
 {
   pinMode(_resetPin, OUTPUT);
   pinMode(_sdioPin, OUTPUT); //SDIO is connected to A4 for I2C
@@ -184,7 +184,7 @@ byte Si4703_Breakout::updateRegisters() {
 
   //End this transmission
   byte ack = Wire.endTransmission();
-  if(ack != 0) { //We have a problem! 
+  if(ack != 0) { //We have a problem!
     return(FAIL);
   }
 
@@ -229,8 +229,8 @@ return getChannel();
 int Si4703_Breakout::getChannel() {
   readRegisters();
   int channel = si4703_registers[READCHAN] & 0x03FF; //Mask out everything but the lower 10 bits
-  //Freq(MHz) = 0.100(in Europe) * Channel + 87.5MHz
-  //X = 0.1 * Chan + 87.5
-  channel += 875; //98 + 875 = 973
+  // Freq(MHz) = 0.100(in Japan) * Channel + 76.0MHz
+  // X = 0.1 * Chan + 76.0
+  channel += 760; // 40 + 760 = 800
   return(channel);
 }
