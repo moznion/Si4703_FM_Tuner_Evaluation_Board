@@ -70,6 +70,8 @@ class Si4703_Breakout
 	int seek(byte seekDirection);
 	int getChannel();
 	uint16_t si4703_registers[16]; //There are 16 registers, each 16 bits large
+	uint8_t textIndex;
+    char rdsText[65];
 	static const uint16_t  FAIL = 0;
 	static const uint16_t  SUCCESS = 1;
 

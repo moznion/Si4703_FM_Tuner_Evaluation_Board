@@ -79,33 +79,46 @@ void Si4703_Breakout::readRDS(char* buffer, long timeout)
 		// once we have a full set return
 		// if you get nothing after 20 readings return with empty string
 	  uint16_t b = si4703_registers[RDSB];
-	  int index = b & 0x03;
-	  if (! completed[index] && b < 500)
-	  {
-		completed[index] = true;
-		completedCount ++;
-	  	char Dh = (si4703_registers[RDSD] & 0xFF00) >> 8;
-      	char Dl = (si4703_registers[RDSD] & 0x00FF);
-		buffer[index * 2] = Dh;
-		buffer[index * 2 +1] = Dl;
-		// Serial.print(si4703_registers[RDSD]); Serial.print(" ");
-		// Serial.print(index);Serial.print(" ");
-		// Serial.write(Dh);
-		// Serial.write(Dl);
-		// Serial.println();
+      uint8_t type = b >> 12;
+      if (type == 2) {
+          uint8_t index = si4703_registers[RDSB] & 0x0f;
+
+          if (textIndex == index || textIndex + 1 == index) {
+              textIndex = index;
+              rdsText[index*4] = si4703_registers[RDSC] >> 8;
+              rdsText[index*4+1] = si4703_registers[RDSC] & 0xff;
+              rdsText[index*4+2] = si4703_registers[RDSD] >> 8;
+              rdsText[index*4+3] = si4703_registers[RDSD] & 0xff;
+              for (int i = index*4; i < index*4+4; i++) {
+                  if (rdsText[i] == 0 || rdsText[i] == 0x0d) {
+                      rdsText[i] = 0;
+                      rdsText[64] = 0;
+                      textIndex = 0xff;
+                  }
+              }
+              if (index == 0xf) {
+                  rdsText[64] = 0;
+                  for (int i = 63; i > 0 && rdsText[i] == ' '; i++)
+                      rdsText[i] = 0;
+                  textIndex = 0xff;
+              }
+              strncpy(buffer, rdsText, 21);
+          } else {
+              textIndex = 0;
+          }
       }
-      delay(40); //Wait for the RDS bit to clear
+      delay(40); // Wait for the RDS bit to clear
 	}
 	else {
 	  delay(30); //From AN230, using the polling method 40ms should be sufficient amount of time between checks
 	}
   }
-	if (millis() >= endTime) {
-		buffer[0] ='\0';
-		return;
-	}
-
-  buffer[8] = '\0';
+  // XXX
+  //  if (millis() >= endTime) {
+  //    buffer[0] ='\0';
+  //    return;
+  //  }
+  buffer[21] = '\0';
 }
 
 
